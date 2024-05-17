@@ -65,7 +65,7 @@ export function Board() {
             case 'bK': handleMoveKing({r,c}); break;
             case 'wK': handleMoveKing({r,c}); break;
             case 'checkbK': handleMoveKing({r,c}); break;
-            case 'checkbK': handleMoveKing({r,c}); break;
+            case 'checkwK': handleMoveKing({r,c}); break;
             case 'wN': handleMoveKnight({r,c}); break;
             case 'bN': handleMoveKnight({r,c}); break;
             case 'wB': handleMoveBishop({r,c}); break;
@@ -208,13 +208,9 @@ export function Board() {
             setGameOver(true);
             return;
         }
-        else {
-            setInCheck(false);
-            setBoard(validMoveBoard);
-            setPieceSeleted(Array<number>(r,c));
-        }
+        setBoard(validMoveBoard);
+        setPieceSeleted(Array<number>(r,c));
     }
-
 
     const handleMoveKing = ({r,c}:{r:number, c:number}) => {
         const nextBoard = oldBoard.slice();
