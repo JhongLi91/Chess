@@ -16,6 +16,7 @@ import bK from '../images/black-king.png';
 import wQ from '../images/white-queen.png';
 import bQ from '../images/black-queen.png';
 import blank from '../images/blank.png'
+import next from "next";
 
 export function Board() {
     const [board, setBoard] = useState(boardInit());
@@ -35,6 +36,8 @@ export function Board() {
             switch (p) {
                 case 'wP': handleSelectWhitePawn({r,c}); break;
                 case 'wK': handleSelectKing({r,c}); break;
+                case 'wN': handleSelectKnight({r,c}); break;
+                case 'wB': handleSelectBishop({r,c}); break;
             }
         }
         else {
@@ -45,6 +48,8 @@ export function Board() {
             switch (p) {
                 case 'bP': handleSelectBlackPawn({r,c}); break;
                 case 'bK': handleSelectKing({r,c}); break;
+                case 'bN': handleSelectKnight({r,c}); break;
+                case 'bB': handleSelectBishop({r,c}); break;
             }
         }
     }
@@ -58,8 +63,88 @@ export function Board() {
             case 'wK': handleMoveKing({r,c}); break;
             case 'checkbK': handleMoveKing({r,c}); break;
             case 'checkbK': handleMoveKing({r,c}); break;
+            case 'wN': handleMoveKnight({r,c}); break;
+            case 'bN': handleMoveKnight({r,c}); break;
+            case 'wB': handleMoveBishop({r,c}); break;
+            case 'bB': handleMoveBishop({r,c}); break;
         }
 
+    }
+
+    const handleSelectBishop = ({r, c}:{r:number, c:number}) => {
+        let validMoveBoard = oldBoard.slice();
+        diagonalMoves({r,c,validMoveBoard});
+        setBoard(validMoveBoard);
+        setPieceSeleted(Array<number>(r,c));
+    }
+    const handleMoveBishop = ({r,c}: {r:number, c:number}) => {
+        const nextBoard = oldBoard.slice();
+        nextBoard[r*8+c] = (WhiteTurn ? 'wB' : 'bB');
+        nextBoard[pieceSelected[0]*8+pieceSelected[1]] = 'Blank';
+        diagonalCheck({r,c,nextBoard});
+        setBoard(nextBoard);
+        setOldBoard(nextBoard);
+        setWhiteTurn(!WhiteTurn);
+
+    }
+
+    const handleSelectKnight = ({r,c}:{r:number, c:number}) => {
+        const validMoveBoard = oldBoard.slice();
+
+        if (r+2 < 8) {
+            if (c-1 >= 0 && board[(r+2)*8+(c-1)] == 'Blank') validMoveBoard[(r+2)*8+(c-1)] = 'valid';
+            else if (c-1 >= 0 && board[(r+2)*8+(c-1)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r+2)*8+(c-1)] = 'attack';
+            if (c+1 < 8 && board[(r+2)*8+(c+1)] == 'Blank') validMoveBoard[(r+2)*8+(c+1)] = 'valid';
+            else if (c+1 < 8 && board[(r+2)*8+(c+1)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r+2)*8+(c+1)] = 'attack';
+        }
+        if (r-2 >= 0) {
+            if (c-1 >= 0 && board[(r-2)*8+(c-1)] == 'Blank') validMoveBoard[(r-2)*8+(c-1)] = 'valid';
+            else if (c-1 >= 0 && board[(r-2)*8+(c-1)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r-2)*8+(c-1)] = 'attack';
+            if (c+1 < 8 && board[(r-2)*8+(c+1)] == 'Blank') validMoveBoard[(r-2)*8+(c+1)] = 'valid';
+            else if (c+1 < 8 && board[(r-2)*8+(c+1)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r-2)*8+(c+1)] = 'attack';
+        }
+        if (c+2 < 8) {
+            if (r-1 >= 0 && board[(r-1)*8+(c+2)] == 'Blank') validMoveBoard[(r-1)*8+(c+2)] = 'valid';
+            else if (r-1 >= 0 && board[(r-1)*8+(c+2)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r-1)*8+(c+2)] = 'attack';
+            if (r+1 < 8 && board[(r+1)*8+(c+2)] == 'Blank') validMoveBoard[(r+1)*8+(c+2)] = 'valid';
+            else if (r+1 < 8 && board[(r+1)*8+(c+2)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r+1)*8+(c+2)] = 'attack';
+        }
+        if (c-2 >= 0) {
+            if (r-1 >= 0 && board[(r-1)*8+(c-2)] == 'Blank') validMoveBoard[(r-1)*8+(c-2)] = 'valid';
+            else if (r-1 >= 0 && board[(r-1)*8+(c-2)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r-1)*8+(c-2)] = 'attack';
+            if (r+1 < 8 && board[(r+1)*8+(c-2)] == 'Blank') validMoveBoard[(r+1)*8+(c-2)] = 'valid';
+            else if (r+1 < 8 && board[(r+1)*8+(c-2)].charAt(0) == (WhiteTurn ? "b" : "w")) validMoveBoard[(r+1)*8+(c-2)] = 'attack';
+        }
+        setBoard(validMoveBoard);
+        setPieceSeleted(Array<number>(r,c));
+    }
+
+
+    const handleMoveKnight = ({r,c}:{r:number, c:number}) => {
+        const nextBoard = oldBoard.slice();
+        nextBoard[r*8+c] = (WhiteTurn ? 'wN' : 'bN');
+        nextBoard[pieceSelected[0]*8+pieceSelected[1]] = 'Blank';
+
+        if (r+2 < 8) {
+            if (c-1 >= 0 && board[(r+2)*8+(c-1)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r+2)*8+(c-1)] =  (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+            if (c+1 < 8 && board[(r+2)*8+(c+1)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r+2)*8+(c+1)] =  (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+        }
+        if (r-2 >= 0) {
+            if (c-1 >= 0 && board[(r-2)*8+(c-1)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r-2)*8+(c-1)] =  (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+            if (c+1 < 8 && board[(r-2)*8+(c+1)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r-2)*8+(c+1)] =  (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+        }
+        if (c+2 < 8) {
+            if (r-1 >= 0 && board[(r-1)*8+(c+2)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r-1)*8+(c+2)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+            if (r+1 < 8 && board[(r+1)*8+(c+2)] == (WhiteTurn ? "bK" : "wK")) nextBoard[(r+1)*8+(c+2)] =  (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+        }
+        if (c-2 >= 0) {
+            if (r-1 >= 0 && board[(r-1)*8+(c-2)].charAt(0) == (WhiteTurn ? "bK" : "wK")) nextBoard[(r-1)*8+(c-2)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+            if (r+1 < 8 && board[(r+1)*8+(c-2)].charAt(0) == (WhiteTurn ? "bK" : "wK")) nextBoard[(r+1)*8+(c-2)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+        }
+
+        setBoard(nextBoard);
+        setOldBoard(nextBoard);
+        setWhiteTurn(!WhiteTurn);
     }
 
     const handleSelectKing = ({r,c}:{r:number, c:number}) => {
@@ -79,11 +164,12 @@ export function Board() {
                 }
             }
         }
-        if (noMove) {
+        if (noMove && inCheck) {
             setGameOver(true);
             return;
         }
         else {
+            setInCheck(false);
             setBoard(validMoveBoard);
             setPieceSeleted(Array<number>(r,c));
         }
@@ -94,16 +180,6 @@ export function Board() {
         const nextBoard = oldBoard.slice();
         nextBoard[r*8+c] = (WhiteTurn ? 'wK' : 'bK');
         nextBoard[pieceSelected[0]*8+pieceSelected[1]] = 'Blank';
-
-        if (WhiteTurn) {
-            if (c != 0 && board[(r-1)*8+(c-1)] == 'bK') nextBoard[(r-1)*8+(c-1)] = 'checkbK', setInCheck(true);
-            if (c != 7 && board[(r-1)*8+(c+1)] == 'bK') nextBoard[(r-1)*8+(c+1)] = 'checkbK', setInCheck(true);
-        }
-        else {
-            if (c != 0 && board[(r+1)*8+(c-1)] == 'wK') nextBoard[(r+1)*8+(c-1)] = 'checkwK', setInCheck(true);
-            if (c != 7 && board[(r+1)*8+(c+1)] == 'wK') nextBoard[(r+1)*8+(c+1)] = 'checkwK', setInCheck(true);
-        }
-
         setBoard(nextBoard);
         setOldBoard(nextBoard);
         setInCheck(false)
@@ -216,6 +292,97 @@ export function Board() {
         handlePromotionClick({r,c,promote})
     }
 
+    function diagonalMoves({r, c, validMoveBoard}:{r:number, c:number, validMoveBoard:Array<string>}) {
+        let x = r, y = c;
+        while (x+1 < 7 && y-1 >= 0) {
+            if (board[(x+1)*8+(y-1)] == 'Blank') validMoveBoard[(x+1)*8+(y-1)] = 'valid';
+            else if (board[(x+1)*8+(y-1)].charAt(0) == (WhiteTurn ? 'b' : 'w')) {
+                validMoveBoard[(x+1)*8+(y-1)] = 'attack';
+                break;
+            }
+            else break;
+            x++, y--;
+        }
+        x = r, y = c;
+        while (x+1 < 7 && y+1 < 7) {
+            if (board[(x+1)*8+(y+1)] == 'Blank') validMoveBoard[(x+1)*8+(y+1)] = 'valid';
+            else if (board[(x+1)*8+(y+1)].charAt(0) == (WhiteTurn ? 'b' : 'w')) {
+                validMoveBoard[(x+1)*8+(y+1)] = 'attack';
+                break;
+            }
+            else break;
+            x++, y++;
+        }
+        x = r, y = c;
+        while (x-1 >= 0 && y+1 < 7) {
+            if (board[(x-1)*8+(y+1)] == 'Blank') validMoveBoard[(x-1)*8+(y+1)] = 'valid';
+            else if (board[(x-1)*8+(y+1)].charAt(0) == (WhiteTurn ? 'b' : 'w')) {
+                validMoveBoard[(x-1)*8+(y+1)] = 'attack';
+                break;
+            }
+            else break;
+            x--, y++;
+        }
+        x = r, y = c;
+        while (x-1 >= 0 && y-1 >= 0) {
+            if (board[(x-1)*8+(y-1)] == 'Blank') validMoveBoard[(x-1)*8+(y-1)] = 'valid';
+            else if (board[(x-1)*8+(y-1)].charAt(0) == (WhiteTurn ? 'b' : 'w')) {
+                validMoveBoard[(x-1)*8+(y-1)] = 'attack';
+                break;
+            }
+            else break;
+            x--, y--;
+        }
+    }
+
+    function diagonalCheck({r, c, nextBoard}:{r:number, c:number, nextBoard:Array<string>}) {
+        let x = r, y = c;
+        while (x+1 < 7 && y-1 >= 0) {
+            if (board[(x+1)*8+(y-1)] == 'Blank') x++, y--;
+            else if (board[(x+1)*8+(y-1)].charAt(1) == 'K') {
+                if (board[(x+1)*8+(y-1)] == (WhiteTurn ? 'bK' : 'wK')) {
+                    nextBoard[(x+1)*8+(y-1)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+                    break;
+                }
+            }
+            else break;
+        }
+        x = r, y = c;
+        while (x+1 < 7 && y+1 < 7) {
+            if (board[(x+1)*8+(y+1)] == 'Blank') x++, y++;
+            else if (board[(x+1)*8+(y+1)].charAt(1) == 'K') {
+                if (board[(x+1)*8+(y+1)] == (WhiteTurn ? 'bK' : 'wK')) {
+                    nextBoard[(x+1)*8+(y+1)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+                    break;
+                }
+            }
+            else break;
+        }
+        x = r, y = c;
+        while (x-1 >= 0 && y+1 < 7) {
+            if (board[(x-1)*8+(y+1)] == 'Blank') x--, y++;
+            else if (board[(x-1)*8+(y+1)].charAt(1) == 'K') {
+                if (board[(x-1)*8+(y+1)] == (WhiteTurn ? 'bK' : 'wK')) {
+                    nextBoard[(x-1)*8+(y+1)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+                    break;
+                }
+            }
+            else break;
+        }
+        x = r, y = c;
+        while (x-1 >= 0 && y-1 >= 0) {
+            if (board[(x-1)*8+(y-1)] == 'Blank') x--, y--;
+            else if (board[(x-1)*8+(y-1)].charAt(1) == 'K') {
+                if (board[(x-1)*8+(y-1)] == (WhiteTurn ? 'bK' : 'wK')) {
+                    nextBoard[(x-1)*8+(y-1)] = (WhiteTurn ? "checkbK" : "checkwK"), setInCheck(true);
+                    break;
+                }
+            }
+            else break;
+        }
+    }
+
+
     const buildBoard = () => {
         const boardRow = [];
         for (let r = 0; r < 8; r++) {
@@ -252,7 +419,6 @@ export function Board() {
         </>
     )
 }
-
 
 
 const boardInit = () => {
