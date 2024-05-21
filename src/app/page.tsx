@@ -1,4 +1,4 @@
-omport Link from "next/link";
+import Link from "next/link";
 import homeBG from "./game-component/images/background.jpg"
 
 export default function Home() {
