@@ -1,4 +1,4 @@
-import Link from "next/link";
+omport Link from "next/link";
 import homeBG from "./game-component/images/background.jpg"
 
 export default function Home() {
@@ -6,7 +6,7 @@ export default function Home() {
     <body style={{  backgroundImage: `url(${homeBG.src})`, 
                     backgroundPosition: 'bottom',
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '100%'
+                    backgroundSize: '120%'
     }}>
     <main className="flex min-h-screen flex-col place-content-center items-center p-24">
         <div className="box-border h-32">
