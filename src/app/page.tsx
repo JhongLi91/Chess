@@ -6,7 +6,7 @@ export default function Home() {
     <body style={{  backgroundImage: `url(${homeBG.src})`, 
                     backgroundPosition: 'bottom',
                     backgroundRepeat: 'no-repeat',
-                    backgroundSize: '150%'
+                    backgroundSize: '110%'
     }}>
     <main className="flex min-h-screen flex-col place-content-center items-center p-24">
         <div className="box-border h-32">

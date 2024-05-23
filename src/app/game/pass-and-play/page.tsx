@@ -8,7 +8,7 @@ export default function passNplay() {
         <body style={{  backgroundImage: `url(${chessBoard.src})`, 
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat',
-                        backgroundSize: '40%',
+                        backgroundSize: '50%',
         }}>
 
             <main className="flex min-h-screen place-content-center items-center">
